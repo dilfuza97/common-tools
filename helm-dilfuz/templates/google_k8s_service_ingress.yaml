@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: dilfuz-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    certmanager.k8s.io/cluster-issuer: letsencrypt-dilfuz-prod
+
+spec:
+  rules:
+
+  - host: grafana.dilfuz.com
+    http:
+      paths:
+      - backend:
+          serviceName: grafana-dilfuz-service
+          servicePort: {{ .Values.grafanaport }}
+
+  - host: jenkins.dilfuz.com
+    http:
+      paths:
+      - backend:
+          serviceName: jenkins-dilfuz-service
+          servicePort: {{ .Values.jenkinsport }}
+
+  - host: nexus.dilfuz.com
+    http:
+      paths:
+      - backend:
+          serviceName: nexus-dilfuz-service
+          servicePort: {{ .Values.nexusport }}
+
+  - host: vault.dilfuz.com
+    http:
+      paths:
+      - backend:
+          serviceName: vault-dilfuz-service
+          servicePort: {{ .Values.vaultport }}
+  tls:
+  - hosts:
+    - vault.dilfuz.com
+    - nexus.dilfuz.com
+    - grafana.dilfuz.com
+    - jenkins.dilfuz.com
+    secretName: tls-prod-cert
